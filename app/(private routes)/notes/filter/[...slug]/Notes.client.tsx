@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import css from './NotesClient.module.css';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { fetchNotes } from '@/lib/api';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { fetchNotesClient } from '@/lib/api/clientApi';
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
@@ -21,9 +21,9 @@ export default function NotesClient({ tag }: NotesClientProps) {
   const perPage = 8;
 
   const { data, isLoading } = useQuery({
-    queryKey: ['notes', tag, currentPage, perPage, search],
+    queryKey: ['notes', tag, currentPage, search],
     queryFn: () =>
-      fetchNotes(currentPage, perPage, search || undefined, tag === 'all' ? undefined : tag),
+      fetchNotesClient(currentPage, perPage, search || undefined, tag === 'all' ? undefined : tag),
     placeholderData: keepPreviousData,
   });
 
@@ -55,7 +55,6 @@ export default function NotesClient({ tag }: NotesClientProps) {
         {!isLoading && hasResults && (
           <>
             <NoteList notes={notes} />
-
             {totalPages > 1 && (
               <Pagination
                 totalPages={totalPages}
