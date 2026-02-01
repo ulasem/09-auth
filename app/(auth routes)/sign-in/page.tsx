@@ -1,34 +1,35 @@
 'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { login, LoginRequest } from '@/lib/api/clientApi';
-import { ApiError } from '@/app/api/api';
-import { useAuthStore } from '@/lib/store/authStore';
-
 import css from './SignInPage.module.css';
 
-const SignIn = () => {
-  const router = useRouter();
+import { useState } from 'react';
+import { LoginRequest } from '@/types/user';
+import { loginUser } from '@/lib/api/clientApi';
+import { useRouter } from 'next/navigation';
+import { useUserAuthStore } from '@/lib/store/authStore';
+
+export default function SignInPage() {
   const [error, setError] = useState('');
-  const setUser = useAuthStore(state => state.setUser);
+  const router = useRouter();
+  const setAuthUser = useUserAuthStore(state => state.setUser);
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      const formValues = Object.fromEntries(formData) as LoginRequest;
-      const res = await login(formValues);
+      const values: LoginRequest = {
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
+      };
+      const user = await loginUser(values);
 
-      if (res) {
-        setUser(res);
+      if (user) {
+        setAuthUser(user);
         router.push('/profile');
       } else {
-        setError('Invalid email or password');
+        setError('Invalid email or password.');
       }
     } catch (error) {
       setError(
-        (error as ApiError).response?.data?.error ??
-          (error as ApiError).message ??
-          'Oops... some error',
+        `Something went wrong. Try again.
+            ERR: ${error}`,
       );
     }
   };
@@ -37,7 +38,6 @@ const SignIn = () => {
     <main className={css.mainContent}>
       <form action={handleSubmit} className={css.form}>
         <h1 className={css.formTitle}>Sign in</h1>
-
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
           <input id="email" type="email" name="email" className={css.input} required />
@@ -58,6 +58,4 @@ const SignIn = () => {
       </form>
     </main>
   );
-};
-
-export default SignIn;
+}

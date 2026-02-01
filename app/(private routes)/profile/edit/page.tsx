@@ -1,76 +1,96 @@
 'use client';
+import { useRouter } from 'next/navigation';
+import css from './EditProfilePage.module.css';
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import css from './EditProfilePage.module.css';
+import { useUserAuthStore } from '@/lib/store/authStore';
 import { getMe, updateMe } from '@/lib/api/clientApi';
+import { UpdateUser, User } from '@/types/user';
+import Loading from '@/app/loading';
 
-const EditPage = () => {
+export default function ProfileEditPage() {
   const router = useRouter();
-
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [avatar, setAvatar] = useState('');
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = await getMe();
-      setUsername(user.username);
-      setEmail(user.email);
-      setAvatar(user.avatar);
-    };
-
-    fetchUser();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    await updateMe({ username });
-
-    router.push('/profile');
-  };
+  const { user, setUser } = useUserAuthStore();
+  const [userName, setUserName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleCancel = () => {
-    router.push('/profile');
+    router.back();
+  };
+
+  useEffect(() => {
+    if (!user) {
+      getMe()
+        .then((data: User) => {
+          setUser(data);
+          setUserName(data.username);
+        })
+        .catch(error => setError(error.message));
+    } else {
+      setUserName(user.username);
+    }
+  }, [user, setUser]);
+
+  const handleSubmit = async (formData: FormData) => {
+    setIsLoading(true);
+
+    try {
+      const userCng: UpdateUser = {
+        username: formData.get('username') as string,
+      };
+
+      const updUser = await updateMe(userCng);
+      setUser(updUser);
+      router.push('/profile');
+    } catch (error) {
+      setError(
+        `Something went wrong. Try again.
+            ERR: ${error}`,
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <main className={css.mainContent}>
       <div className={css.profileCard}>
+        {isLoading && <Loading />}
+
+        {error && <p className={css.error}>{error}</p>}
+
         <h1 className={css.formTitle}>Edit Profile</h1>
 
-        {avatar && (
-          <Image
-            src={avatar}
-            alt="User Avatar"
-            width={120}
-            height={120}
-            className={css.avatar}
-            loading="eager"
-          />
-        )}
+        <Image
+          src={user ? user.avatar : '/default-avatar.svg'}
+          alt="User Avatar"
+          width={120}
+          height={120}
+          className={css.avatar}
+        />
 
-        <form onSubmit={handleSubmit} className={css.profileInfo}>
+        <form action={handleSubmit} className={css.profileInfo}>
           <div className={css.usernameWrapper}>
-            <label htmlFor="username">Username:</label>
+            <label htmlFor="username">Username: {userName}</label>
             <input
               id="username"
               type="text"
               className={css.input}
-              value={username}
-              onChange={e => setUsername(e.target.value)}
+              value={userName}
+              name="username"
+              onChange={ev => setUserName(ev.target.value)}
             />
           </div>
 
-          <p>Email: {email}</p>
+          <p>Email: {user?.email}</p>
 
           <div className={css.actions}>
             <button type="submit" className={css.saveButton}>
               Save
             </button>
-            <button type="button" onClick={handleCancel} className={css.cancelButton}>
+            <button onClick={handleCancel} type="button" className={css.cancelButton}>
               Cancel
             </button>
           </div>
@@ -78,6 +98,4 @@ const EditPage = () => {
       </div>
     </main>
   );
-};
-
-export default EditPage;
+}

@@ -1,6 +1,5 @@
 export type NoteTag =
   | 'Work'
-  | 'Todo'
   | 'Personal'
   | 'Meeting'
   | 'Shopping'
@@ -8,7 +7,8 @@ export type NoteTag =
   | 'Travel'
   | 'Finance'
   | 'Health'
-  | 'Important';
+  | 'Important'
+  | 'Todo';
 
 export interface Note {
   id: string;
@@ -33,3 +33,8 @@ export type NoteDraft = {
   content: string;
   tag: NoteTag;
 };
+
+export interface NotesResponse {
+  notes: Note[];
+  totalPages: number;
+}

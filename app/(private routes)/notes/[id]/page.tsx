@@ -1,31 +1,27 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import type { Metadata } from 'next';
 import NoteDetailsClient from './NoteDetails.client';
-import { fetchNoteById } from '@/lib/api/serverApi';
+import { fetchNoteByIDServer } from '@/lib/api/serverApi';
+import type { Metadata } from 'next';
 
 interface NoteDetailsProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: NoteDetailsProps): Promise<Metadata> {
-  const note = await fetchNoteById(params.id);
+  const { id } = await params;
+  const note = await fetchNoteByIDServer(id);
 
   const title = `Note: ${note.title}`;
-  const description = note.content.slice(0, 160);
+  const description = note.content.substring(0, 160);
 
   return {
     title,
     description,
-    alternates: {
-      canonical: `/notes/${params.id}`,
-    },
+    alternates: { canonical: `/notes/${id}` },
     openGraph: {
       title,
       description,
-      url: `https://notehub.com/notes/${params.id}`,
-      type: 'article',
+      url: `https://notehub.com/notes/${id}`,
       images: [
         {
           url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
@@ -34,6 +30,7 @@ export async function generateMetadata({ params }: NoteDetailsProps): Promise<Me
           alt: note.title,
         },
       ],
+      type: 'article',
     },
     twitter: {
       card: 'summary_large_image',
@@ -44,19 +41,20 @@ export async function generateMetadata({ params }: NoteDetailsProps): Promise<Me
   };
 }
 
-export const dynamic = 'force-dynamic';
-
-export default async function NoteDetailsPage({ params }: NoteDetailsProps) {
+const NoteDetails = async ({ params }: NoteDetailsProps) => {
+  const { id } = await params;
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ['note', params.id],
-    queryFn: () => fetchNoteById(params.id),
+    queryKey: ['note', id],
+    queryFn: () => fetchNoteByIDServer(id),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NoteDetailsClient id={params.id} />
+      <NoteDetailsClient />
     </HydrationBoundary>
   );
-}
+};
+
+export default NoteDetails;
