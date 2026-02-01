@@ -1,9 +1,18 @@
-interface AuthRoutesProps {
-    children: React.ReactNode;
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface AuthRoutesLayoutProps {
+  children: React.ReactNode;
 }
 
-const AuthRoutesLayout = ({ children }: AuthRoutesProps) => {
-    return <>{children}</>; 
-};
+export default function AuthRoutesLayout({ children }: AuthRoutesLayoutProps) {
+  const router = useRouter();
 
-export default AuthRoutesLayout;
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
+
+  return <>{children}</>;
+}

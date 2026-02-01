@@ -5,8 +5,8 @@ import css from './EditProfilePage.module.css';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useUserAuthStore } from '@/lib/store/authStore';
-import { getMe, updateMe } from '@/lib/api/clientApi';
-import { UpdateUser, User } from '@/types/user';
+import { getMe, updateMe, UpdateUser } from '@/lib/api/clientApi';
+import { User } from '@/types/user';
 import Loading from '@/app/loading';
 
 export default function ProfileEditPage() {

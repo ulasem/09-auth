@@ -3,9 +3,8 @@ import css from './SignUpPage.module.css';
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { LoginRequest } from '@/types/user';
 import { useUserAuthStore } from '@/lib/store/authStore';
-import { registerUser } from '@/lib/api/clientApi';
+import { LoginRequest, registerUser } from '@/lib/api/clientApi';
 
 export default function SignUpPage() {
   const [error, setError] = useState('');

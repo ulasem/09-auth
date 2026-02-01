@@ -1,6 +1,6 @@
 import type { NewNote, Note, NotesResponse, NoteTag } from '@/types/note';
 import { nextServer } from './api';
-import type { LoginRequest, UpdateUser, User, StatusMessage } from '@/types/user';
+import type { User } from '@/types/user';
 
 // отримати список нотаток
 export const fetchNotes = async (
@@ -47,6 +47,11 @@ export const deleteNote = async (id: string): Promise<Note> => {
   return response.data;
 };
 
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
 //Реєстрація
 export const registerUser = async (userData: LoginRequest): Promise<User> => {
   return (await nextServer.post<User>('/auth/register', userData)).data;
@@ -62,6 +67,10 @@ export const logoutUser = async (): Promise<StatusMessage> => {
   return (await nextServer.post<StatusMessage>('/auth/logout')).data;
 };
 
+export interface StatusMessage {
+  message: string;
+}
+
 //Перевірка сессії користувача
 export const checkSession = async (): Promise<User | StatusMessage> => {
   return (await nextServer.get<User | StatusMessage>('/auth/session')).data;
@@ -71,6 +80,12 @@ export const checkSession = async (): Promise<User | StatusMessage> => {
 export const getMe = async (): Promise<User> => {
   return (await nextServer.get<User>('/users/me')).data;
 };
+
+export interface UpdateUser {
+  email?: string;
+  username?: string;
+  avatar?: string;
+}
 
 //Оновлення профілю
 export const updateMe = async (userData: UpdateUser): Promise<User> => {

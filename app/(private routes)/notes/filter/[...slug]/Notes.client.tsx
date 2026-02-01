@@ -12,19 +12,17 @@ import SearchBox from '@/components/SearchBox/SearchBox';
 import type { NoteTag, NotesResponse } from '@/types/note';
 
 interface NotesClientProps {
-  initialData: NotesResponse;
   tag?: NoteTag;
 }
 
-function NotesPageClient({ initialData, tag }: NotesClientProps) {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [query, setQuery] = useState<string>('');
+function NotesPageClient({ tag }: NotesClientProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [query, setQuery] = useState('');
 
   const { data, isError, isFetching, isSuccess } = useQuery<NotesResponse>({
     queryKey: ['notes', query, currentPage, tag],
-    queryFn: () => fetchNotes(currentPage, 8, query, tag),
+    queryFn: () => fetchNotes(currentPage, 12, query, tag),
     placeholderData: keepPreviousData,
-    initialData,
   });
 
   const totalPages = data?.totalPages ?? 0;
@@ -34,14 +32,10 @@ function NotesPageClient({ initialData, tag }: NotesClientProps) {
     setCurrentPage(1);
   }, 500);
 
-  const handleChangeQuery = (value: string) => {
-    debouncedSetQuery(value);
-  };
-
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox inputValue={query} onChange={handleChangeQuery} />
+        <SearchBox inputValue={query} onChange={debouncedSetQuery} />
 
         <Link href="/notes/action/create" className={css.button}>
           Create note +
@@ -50,7 +44,6 @@ function NotesPageClient({ initialData, tag }: NotesClientProps) {
 
       <main className="notes-list">
         {isError && <p>Error. Try again.</p>}
-
         {isFetching && <p>Loading...</p>}
 
         {isSuccess && data?.notes.length === 0 && <p>Data not found.</p>}
@@ -58,7 +51,6 @@ function NotesPageClient({ initialData, tag }: NotesClientProps) {
         {isSuccess && data?.notes.length > 0 && (
           <>
             <NoteList notes={data.notes} />
-
             {totalPages > 1 && (
               <Pagination
                 totalPages={totalPages}

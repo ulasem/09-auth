@@ -2,8 +2,7 @@
 import css from './SignInPage.module.css';
 
 import { useState } from 'react';
-import { LoginRequest } from '@/types/user';
-import { loginUser } from '@/lib/api/clientApi';
+import { LoginRequest, loginUser } from '@/lib/api/clientApi';
 import { useRouter } from 'next/navigation';
 import { useUserAuthStore } from '@/lib/store/authStore';
 
