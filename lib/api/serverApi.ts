@@ -59,10 +59,9 @@ export const getMeServer = async (): Promise<User> => {
 
 //Перевірка сессії користувача
 export const checkSessionServer = async () => {
-  const endPoint = `/auth/session`;
   const cookieStore = await cookies();
 
-  const response = await nextServer.get(endPoint, {
+  const response = await nextServer.get(`/auth/session`, {
     headers: {
       Cookie: cookieStore.toString(),
     },
