@@ -1,71 +1,56 @@
-import type { Note, NotesResponse, NoteTag } from '@/types/note';
-import { nextServer } from './api';
-import { User } from '@/types/user';
 import { cookies } from 'next/headers';
+import { nextServer } from './api';
+import { FetchNotesResponse } from './clientApi';
+import { User } from '@/types/user';
+import { Note } from '@/types/note';
 
-// отримати список нотато
 export const fetchNotesServer = async (
-  page: number,
-  perPage: number,
-  search?: string,
-  tag?: NoteTag,
-): Promise<NotesResponse> => {
-  const params: Record<string, string | number> = { page, perPage };
-  if (search) params.search = search;
-  if (tag) params.tag = tag;
-
-  const endPoint = '/notes';
-
+  page: number = 1,
+  search: string = '',
+  tag?: string,
+): Promise<FetchNotesResponse> => {
   const cookiesStore = await cookies();
 
-  const response = await nextServer.get<NotesResponse>(endPoint, {
-    params,
+  const { data } = await nextServer.get<FetchNotesResponse>('/notes', {
+    params: {
+      page,
+      perPage: 12,
+      search,
+      ...(tag && tag !== 'all' && { tag }),
+    },
     headers: {
       Cookie: cookiesStore.toString(),
     },
   });
-
-  return response.data;
+  return data;
 };
 
-//Отримати нотатку за ID
-export const fetchNoteByIDServer = async (id: string): Promise<Note> => {
-  const endPoint = `/notes/${id}`;
-
+export const fetchNoteByIdServer = async (id: string): Promise<Note> => {
   const cookiesStore = await cookies();
-
-  const response = await nextServer.get<Note>(endPoint, {
+  const { data } = await nextServer.get<Note>(`/notes/${id}`, {
     headers: {
       Cookie: cookiesStore.toString(),
     },
   });
-
-  return response.data;
+  return data;
 };
 
-//отримати профіль користувача
-export const getMeServer = async (): Promise<User> => {
-  const endPoint = `/users/me`;
-  const cookieStore = await cookies();
-
-  const response = await nextServer.get<User>(endPoint, {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-  });
-
-  return response.data;
-};
-
-//Перевірка сессії користувача
 export const checkSessionServer = async () => {
   const cookieStore = await cookies();
-
-  const response = await nextServer.get(`/auth/session`, {
+  const res = await nextServer.get('/auth/session', {
     headers: {
       Cookie: cookieStore.toString(),
     },
   });
+  return res;
+};
 
-  return response;
+export const getMeServer = async (): Promise<User> => {
+  const cookieStore = await cookies();
+  const { data } = await nextServer.get('/auth/me', {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
+  return data;
 };

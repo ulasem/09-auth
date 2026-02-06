@@ -1,12 +1,14 @@
 'use client';
-import css from './SignUpPage.module.css';
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useUserAuthStore } from '@/lib/store/authStore';
-import { LoginRequest, registerUser } from '@/lib/api/clientApi';
+import { LoginRequest, register } from '@/lib/api/clientApi';
+import { ApiError } from '@/app/api/api';
 
-export default function SignUpPage() {
+import css from './SignUpPage.module.css';
+
+function SignUpPage() {
   const [error, setError] = useState('');
   const router = useRouter();
   const setAuthUser = useUserAuthStore(state => state.setUser);
@@ -18,7 +20,7 @@ export default function SignUpPage() {
         password: formData.get('password') as string,
       };
 
-      const user = await registerUser(values);
+      const user = await register(values);
 
       if (user) {
         setAuthUser(user);
@@ -28,8 +30,9 @@ export default function SignUpPage() {
       }
     } catch (error) {
       setError(
-        `Something went wrong. Try again.
-            ERR: ${error}`,
+        (error as ApiError).response?.data?.error ??
+          (error as ApiError).message ??
+          'Oops... some error',
       );
     }
   };
@@ -66,3 +69,5 @@ export default function SignUpPage() {
     </main>
   );
 }
+
+export default SignUpPage;

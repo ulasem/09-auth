@@ -1,5 +1,5 @@
-import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { parse } from 'cookie';
 import { checkSessionServer } from './lib/api/serverApi';
 
@@ -7,14 +7,13 @@ const privateRoutes = ['/profile', '/notes'];
 const publicRoutes = ['/sign-in', '/sign-up'];
 
 export async function proxy(request: NextRequest) {
-  const cookiesStoreData = await cookies();
-  const accessToken = cookiesStoreData.get('accessToken')?.value;
-  const refreshToken = cookiesStoreData.get('refreshToken')?.value;
-
   const { pathname } = request.nextUrl;
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+  const refreshToken = cookieStore.get('refreshToken')?.value;
 
-  const isPrivateRoute = privateRoutes.some(route => pathname.startsWith(route));
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+  const isPrivateRoute = privateRoutes.some(route => pathname.startsWith(route));
 
   if (!accessToken) {
     if (refreshToken) {
@@ -23,7 +22,6 @@ export async function proxy(request: NextRequest) {
 
       if (setCookie) {
         const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
-
         for (const cookieStr of cookieArray) {
           const parsed = parse(cookieStr);
           const options = {
@@ -31,16 +29,14 @@ export async function proxy(request: NextRequest) {
             path: parsed.Path,
             maxAge: Number(parsed['Max-Age']),
           };
-
-          if (parsed.accessToken) cookiesStoreData.set('accessToken', parsed.accessToken, options);
-          if (parsed.refreshToken)
-            cookiesStoreData.set('refreshToken', parsed.refreshToken, options);
+          if (parsed.accessToken) cookieStore.set('accessToken', parsed.accessToken, options);
+          if (parsed.refreshToken) cookieStore.set('refreshToken', parsed.refreshToken, options);
         }
 
         if (isPublicRoute) {
           return NextResponse.redirect(new URL('/', request.url), {
             headers: {
-              Cookie: cookiesStoreData.toString(),
+              Cookie: cookieStore.toString(),
             },
           });
         }
@@ -48,7 +44,7 @@ export async function proxy(request: NextRequest) {
         if (isPrivateRoute) {
           return NextResponse.next({
             headers: {
-              Cookie: cookiesStoreData.toString(),
+              Cookie: cookieStore.toString(),
             },
           });
         }
@@ -74,5 +70,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/profile/:path*', '/sign-in', '/sign-up', '/notes/:path*'],
+  matcher: ['/profile/:path*', '/notes/:path*', '/sign-in', '/sign-up'],
 };

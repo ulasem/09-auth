@@ -1,8 +1,9 @@
-import AuthNavigation from '../AuthNavigation/AuthNavigation';
-import css from './Header.module.css';
 import Link from 'next/link';
+import AuthNavigation from '../AuthNavigation/AuthNavigation';
 
-export default function Header() {
+import css from './Header.module.css';
+
+function Header() {
   return (
     <header className={css.header}>
       <Link href="/" aria-label="Home">
@@ -19,3 +20,5 @@ export default function Header() {
     </header>
   );
 }
+
+export default Header;

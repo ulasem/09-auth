@@ -1,18 +1,19 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import css from './AuthNavigation.module.css';
 import { useUserAuthStore } from '@/lib/store/authStore';
+import { logout } from '@/lib/api/clientApi';
 import Link from 'next/link';
-import { logoutUser } from '@/lib/api/clientApi';
 
-export default function AuthNavigation() {
+import css from './AuthNavigation.module.css';
+
+function AuthNavigation() {
   const router = useRouter();
   const { isAuthenticated, user, clearIsAuthenticated } = useUserAuthStore();
 
   const handleLogout = async () => {
     try {
-      await logoutUser();
+      await logout();
       clearIsAuthenticated();
       router.push('/sign-in');
     } catch (error) {
@@ -61,3 +62,5 @@ export default function AuthNavigation() {
     </>
   );
 }
+
+export default AuthNavigation;

@@ -1,50 +1,57 @@
-import type { NewNote, Note, NotesResponse, NoteTag } from '@/types/note';
 import { nextServer } from './api';
-import type { User } from '@/types/user';
+import { User } from '@/types/user';
+import type { Note, NoteTag } from '@/types/note.ts';
 
-// отримати список нотаток
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
+
 export const fetchNotes = async (
-  page: number,
-  perPage: number,
-  search?: string,
-  tag?: NoteTag,
-): Promise<NotesResponse> => {
-  const params: Record<string, string | number> = { page, perPage };
-  if (search) params.search = search;
-  if (tag) params.tag = tag;
-
-  const endPoint = '/notes';
-
-  const response = await nextServer.get<NotesResponse>(endPoint, { params });
-
-  return response.data;
+  page: number = 1,
+  search: string = '',
+  tag?: string,
+): Promise<FetchNotesResponse> => {
+  const { data } = await nextServer.get<FetchNotesResponse>('/notes', {
+    params: {
+      page,
+      perPage: 12,
+      search,
+      ...(tag && tag !== 'all' && { tag }),
+    },
+  });
+  return data;
 };
 
-//Отримати нотатку за ID
-export const fetchNoteByID = async (id: string): Promise<Note> => {
-  const endPoint = `/notes/${id}`;
-
-  const response = await nextServer.get<Note>(endPoint);
-
-  return response.data;
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const { data } = await nextServer.get<Note>(`/notes/${id}`);
+  return data;
 };
 
-//створити нотатку
-export const createNote = async (note: NewNote): Promise<Note> => {
-  const endPoint = `/notes`;
+export interface CreateNotePayload {
+  title: string;
+  content: string;
+  tag: NoteTag;
+}
 
-  const response = await nextServer.post<Note>(endPoint, note);
-
-  return response.data;
+export const createNote = async (note: CreateNotePayload): Promise<Note> => {
+  const { data } = await nextServer.post<Note>('/notes', note);
+  return data;
 };
 
-//видалити нотатки
 export const deleteNote = async (id: string): Promise<Note> => {
-  const endPoint = `/notes/${id}`;
+  const { data } = await nextServer.delete<Note>(`/notes/${id}`);
+  return data;
+};
 
-  const response = await nextServer.delete<Note>(endPoint);
+export interface RegisterRequest {
+  email: string;
+  password: string;
+}
 
-  return response.data;
+export const register = async (userData: RegisterRequest): Promise<User> => {
+  const { data } = await nextServer.post<User>('/auth/register', userData);
+  return data;
 };
 
 export interface LoginRequest {
@@ -52,46 +59,34 @@ export interface LoginRequest {
   password: string;
 }
 
-//Реєстрація
-export const registerUser = async (userData: LoginRequest): Promise<User> => {
-  return (await nextServer.post<User>('/auth/register', userData)).data;
+export const login = async (userData: LoginRequest): Promise<User> => {
+  const { data } = await nextServer.post<User>('/auth/login', userData);
+  return data;
 };
 
-//Аутентицікація
-export const loginUser = async (userData: LoginRequest): Promise<User> => {
-  return (await nextServer.post<User>('/auth/login', userData)).data;
+export const logout = async (): Promise<void> => {
+  await nextServer.post('/auth/logout');
 };
 
-//Вихід користувача
-export const logoutUser = async (): Promise<StatusMessage> => {
-  return (await nextServer.post<StatusMessage>('/auth/logout')).data;
-};
-
-export interface StatusMessage {
+interface CheckSessionRequest {
   message: string;
 }
 
-//Перевірка сессії користувача
-export const checkSession = async (): Promise<User | StatusMessage> => {
-  return (await nextServer.get<User | StatusMessage>('/auth/session')).data;
+export const checkSession = async (): Promise<User | CheckSessionRequest> => {
+  const { data } = await nextServer.get<User | CheckSessionRequest>('/auth/session');
+  return data;
 };
 
-//отримати профіль користувача
 export const getMe = async (): Promise<User> => {
-  return (await nextServer.get<User>('/users/me')).data;
+  const { data } = await nextServer.get<User>('/users/me');
+  return data;
 };
 
-export interface UpdateUser {
-  email?: string;
+export interface UpdateUserRequest {
   username?: string;
-  avatar?: string;
 }
 
-//Оновлення профілю
-export const updateMe = async (userData: UpdateUser): Promise<User> => {
-  const endPoint = '/users/me';
-
-  const response = await nextServer.patch<User>(endPoint, userData);
-
-  return response.data;
+export const updateMe = async (payload: UpdateUserRequest): Promise<User> => {
+  const { data } = await nextServer.put<User>('/users/me', payload);
+  return data;
 };

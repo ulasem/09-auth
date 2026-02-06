@@ -1,19 +1,19 @@
-import css from './NoteList.module.css';
-import type { Note, NoteId } from '../../types/note';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteNote } from '@/lib/api/clientApi';
+import type { Note } from '@/types/note';
 import Link from 'next/link';
+
+import css from './NoteList.module.css';
 
 interface NoteListProps {
   notes: Note[];
 }
 
-export default function NoteList({ notes }: NoteListProps) {
-  console.log('NoteList notes:', notes);
+function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
-    mutationFn: (id: NoteId) => deleteNote(id),
+    mutationFn: (id: string) => deleteNote(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
@@ -28,25 +28,22 @@ export default function NoteList({ notes }: NoteListProps) {
 
   return (
     <ul className={css.list}>
-      {notes.map(note => (
-        <li key={note.id} className={css.listItem}>
-          <h2 className={css.title}>{note.title}</h2>
-          <p className={css.content}>{note.content}</p>
+      {notes.map(({ id, title, content, tag }) => (
+        <li key={id} className={css.listItem}>
+          <h2 className={css.title}>{title}</h2>
+          <p className={css.content}>{content}</p>
+
           <div className={css.footer}>
-            <span className={css.tag}>{note.tag || 'No tag'}</span>
-            <Link
-              href={`/notes/${note.id}`}
-              className={css.link}
-              aria-label={`View details of note ${note.title}`}
-            >
+            <span className={css.tag}>{tag}</span>
+            <Link href={`/notes/${id}`} className={css.link}>
               View details
             </Link>
             <button
               className={css.button}
-              onClick={() => deleteMutation.mutate(note.id)}
+              onClick={() => deleteMutation.mutate(id)}
               disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+              Delete
             </button>
           </div>
         </li>
@@ -54,3 +51,5 @@ export default function NoteList({ notes }: NoteListProps) {
     </ul>
   );
 }
+
+export default NoteList;

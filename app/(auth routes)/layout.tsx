@@ -7,7 +7,7 @@ interface AuthRoutesLayoutProps {
   children: React.ReactNode;
 }
 
-export default function AuthRoutesLayout({ children }: AuthRoutesLayoutProps) {
+function AuthRoutesLayout({ children }: AuthRoutesLayoutProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -16,3 +16,5 @@ export default function AuthRoutesLayout({ children }: AuthRoutesLayoutProps) {
 
   return <>{children}</>;
 }
+
+export default AuthRoutesLayout;

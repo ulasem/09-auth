@@ -14,27 +14,7 @@ export interface Note {
   id: string;
   title: string;
   content: string;
+  tag: NoteTag;
   createdAt: string;
   updatedAt: string;
-  tag: NoteTag;
-}
-
-export interface NewNote {
-  title: string;
-  content: string;
-  tag: NoteTag;
-}
-
-export type NoteId = Note['id'];
-export type Tag = Note['tag'];
-
-export type NoteDraft = {
-  title: string;
-  content: string;
-  tag: NoteTag;
-};
-
-export interface NotesResponse {
-  notes: Note[];
-  totalPages: number;
 }
