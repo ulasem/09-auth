@@ -1,7 +1,8 @@
-import css from './Footer.module.css';
 import Link from 'next/link';
 
-export default function Footer() {
+import css from './Footer.module.css';
+
+function Footer() {
   return (
     <footer className={css.footer}>
       <div className={css.content}>
@@ -9,7 +10,7 @@ export default function Footer() {
         <div className={css.wrap}>
           <p>Developer: Yuliia Semochko</p>
           <p>
-            Contact us:
+            Contact me:
             <Link href="mailto:yuliiasemochko819@gmail.com">yuliiasemochko819@gmail.com</Link>
           </p>
         </div>
@@ -17,3 +18,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+export default Footer;

@@ -1,6 +1,7 @@
-import css from './CreateNote.module.css';
+import { Metadata } from 'next';
 import NoteForm from '@/components/NoteForm/NoteForm';
-import type { Metadata } from 'next';
+
+import css from './CreateNote.module.css';
 
 export const metadata: Metadata = {
   title: 'Create Note',
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CreateNotePage() {
+async function CreateNote() {
   return (
     <main className={css.main}>
       <div className={css.container}>
@@ -32,3 +33,5 @@ export default function CreateNotePage() {
     </main>
   );
 }
+
+export default CreateNote;

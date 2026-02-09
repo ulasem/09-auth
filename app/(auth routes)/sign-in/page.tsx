@@ -1,12 +1,14 @@
 'use client';
-import css from './SignInPage.module.css';
 
 import { useState } from 'react';
-import { LoginRequest, loginUser } from '@/lib/api/clientApi';
+import { LoginRequest, login } from '@/lib/api/clientApi';
 import { useRouter } from 'next/navigation';
 import { useUserAuthStore } from '@/lib/store/authStore';
+import { ApiError } from '@/app/api/api';
 
-export default function SignInPage() {
+import css from './SignInPage.module.css';
+
+function SignInPage() {
   const [error, setError] = useState('');
   const router = useRouter();
   const setAuthUser = useUserAuthStore(state => state.setUser);
@@ -17,7 +19,7 @@ export default function SignInPage() {
         email: formData.get('email') as string,
         password: formData.get('password') as string,
       };
-      const user = await loginUser(values);
+      const user = await login(values);
 
       if (user) {
         setAuthUser(user);
@@ -27,8 +29,9 @@ export default function SignInPage() {
       }
     } catch (error) {
       setError(
-        `Something went wrong. Try again.
-            ERR: ${error}`,
+        (error as ApiError).response?.data?.error ??
+          (error as ApiError).message ??
+          'Oops... some error',
       );
     }
   };
@@ -58,3 +61,5 @@ export default function SignInPage() {
     </main>
   );
 }
+
+export default SignInPage;

@@ -1,15 +1,17 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import css from './EditProfilePage.module.css';
 
-import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useUserAuthStore } from '@/lib/store/authStore';
-import { getMe, updateMe, UpdateUser } from '@/lib/api/clientApi';
+import { getMe, updateMe, UpdateUserRequest } from '@/lib/api/clientApi';
+import { ApiError } from '@/app/api/api';
 import { User } from '@/types/user';
+import Image from 'next/image';
 import Loading from '@/app/loading';
 
-export default function ProfileEditPage() {
+import css from './EditProfilePage.module.css';
+
+function ProfileEditPage() {
   const router = useRouter();
   const { user, setUser } = useUserAuthStore();
   const [userName, setUserName] = useState('');
@@ -37,17 +39,18 @@ export default function ProfileEditPage() {
     setIsLoading(true);
 
     try {
-      const userCng: UpdateUser = {
+      const userCange: UpdateUserRequest = {
         username: formData.get('username') as string,
       };
 
-      const updUser = await updateMe(userCng);
-      setUser(updUser);
+      const updateUser = await updateMe(userCange);
+      setUser(updateUser);
       router.push('/profile');
     } catch (error) {
       setError(
-        `Something went wrong. Try again.
-            ERR: ${error}`,
+        (error as ApiError).response?.data?.error ??
+          (error as ApiError).message ??
+          'Oops... some error',
       );
     } finally {
       setIsLoading(false);
@@ -99,3 +102,5 @@ export default function ProfileEditPage() {
     </main>
   );
 }
+
+export default ProfileEditPage;

@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
-import './globals.css';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import TanStackProvider from '@/components/TanStackProvider/TanStackProvider';
 import AuthProvider from '@/components/AuthProvider/AuthProvider';
+
+import './globals.css';
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -14,20 +15,22 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://notehub.com'),
-  title: 'Note Hub',
-  description: 'Note Hub — an application for creating and storing notes',
+  title: 'NoteHub',
+  description: 'Create, delete, update your notes here',
+  icons: {
+    icon: '/favicon.ico',
+  },
   openGraph: {
-    title: 'Note Hub',
-    description: 'Note Hub — an application for creating and storing notes',
-    url: 'https://notehub.com',
-    siteName: 'Note Hub',
+    title: 'NoteHub',
+    description: 'Create, delete, update your notes here',
+    url: 'https://notehub.app',
+    siteName: 'NoteHub',
     images: [
       {
         url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
         width: 1200,
         height: 630,
-        alt: 'Note Hub',
+        alt: 'NoteHub – notes application',
       },
     ],
     type: 'website',
@@ -40,7 +43,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+function RootLayout({
   children,
   modal,
 }: Readonly<{
@@ -64,3 +67,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+export default RootLayout;

@@ -9,7 +9,7 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-const AuthProvider = ({ children }: AuthProviderProps) => {
+function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const setUser = useUserAuthStore(state => state.setUser);
   const clearIsAuthenticated = useUserAuthStore(state => state.clearIsAuthenticated);
@@ -51,6 +51,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   return <>{children}</>;
-};
+}
 
 export default AuthProvider;
