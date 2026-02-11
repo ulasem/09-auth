@@ -87,6 +87,6 @@ export interface UpdateUserRequest {
 }
 
 export const updateMe = async (payload: UpdateUserRequest): Promise<User> => {
-  const { data } = await nextServer.put<User>('/users/me', payload);
+  const { data } = await nextServer.patch<User>('/users/me', payload);
   return data;
 };

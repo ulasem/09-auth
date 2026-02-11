@@ -11,7 +11,7 @@ interface NotePreviewClientProps {
   id: string;
 }
 
-const NotePreviewClient = ({ id }: NotePreviewClientProps) => {
+function NotePreviewClient({ id }: NotePreviewClientProps) {
   const router = useRouter();
   const onClose = () => router.back();
 
@@ -42,6 +42,6 @@ const NotePreviewClient = ({ id }: NotePreviewClientProps) => {
       <p>{note.createdAt}</p>
     </Modal>
   );
-};
+}
 
 export default NotePreviewClient;

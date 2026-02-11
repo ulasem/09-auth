@@ -4,9 +4,9 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import NotesByTagClient from './Notes.client';
 
 type GenerateMetadataProps = {
-  params: {
+  params: Promise<{
     slug?: string[];
-  };
+  }>;
 };
 
 export async function generateMetadata({ params }: GenerateMetadataProps): Promise<Metadata> {
@@ -45,7 +45,7 @@ interface NotesByTagProps {
 
 async function NotesByTag({ params }: NotesByTagProps) {
   const { slug } = await params;
-  const tag = slug[0];
+  const tag = slug?.[0] ?? 'all';
 
   const queryClient = new QueryClient();
 
