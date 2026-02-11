@@ -7,9 +7,9 @@ const privateRoutes = ['/profile', '/notes'];
 const publicRoutes = ['/sign-in', '/sign-up'];
 
 export async function proxy(request: NextRequest) {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken')?.value;
-  const refreshToken = cookieStore.get('refreshToken')?.value;
+  const cookiesStoreData = await cookies();
+  const accessToken = cookiesStoreData.get('accessToken')?.value;
+  const refreshToken = cookiesStoreData.get('refreshToken')?.value;
 
   const { pathname } = request.nextUrl;
 
@@ -32,14 +32,15 @@ export async function proxy(request: NextRequest) {
             maxAge: Number(parsed['Max-Age']),
           };
 
-          if (parsed.accessToken) cookieStore.set('accessToken', parsed.accessToken, options);
-          if (parsed.refreshToken) cookieStore.set('refreshToken', parsed.refreshToken, options);
+          if (parsed.accessToken) cookiesStoreData.set('accessToken', parsed.accessToken, options);
+          if (parsed.refreshToken)
+            cookiesStoreData.set('refreshToken', parsed.refreshToken, options);
         }
 
         if (isPublicRoute) {
           return NextResponse.redirect(new URL('/', request.url), {
             headers: {
-              Cookie: cookieStore.toString(),
+              Cookie: cookiesStoreData.toString(),
             },
           });
         }
@@ -47,7 +48,7 @@ export async function proxy(request: NextRequest) {
         if (isPrivateRoute) {
           return NextResponse.next({
             headers: {
-              Cookie: cookieStore.toString(),
+              Cookie: cookiesStoreData.toString(),
             },
           });
         }

@@ -37,12 +37,12 @@ export const fetchNoteByIdServer = async (id: string): Promise<Note> => {
 
 export const checkSessionServer = async () => {
   const cookieStore = await cookies();
-  const { data } = await nextServer.get('/auth/session', {
+  const response = await nextServer.get('/auth/session', {
     headers: {
       Cookie: cookieStore.toString(),
     },
   });
-  return data;
+  return response;
 };
 
 export const getMeServer = async (): Promise<User> => {
