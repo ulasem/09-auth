@@ -64,8 +64,13 @@ export const login = async (userData: LoginRequest): Promise<User> => {
   return data;
 };
 
-export const logout = async (): Promise<void> => {
-  await nextServer.post('/auth/logout');
+export interface StatusMessage {
+  message: string;
+}
+
+export const logout = async (): Promise<StatusMessage> => {
+  const { data } = await nextServer.post<StatusMessage>('/auth/logout');
+  return data;
 };
 
 interface CheckSessionRequest {
