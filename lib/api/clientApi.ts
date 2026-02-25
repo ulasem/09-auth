@@ -1,6 +1,6 @@
 import { nextServer } from './api';
 import { User } from '@/types/user';
-import type { Note, NoteTag } from '@/types/note.ts';
+import type { Note, NoteTag } from '@/types/note';
 
 export interface FetchNotesResponse {
   notes: Note[];
