@@ -1,6 +1,6 @@
-import { Metadata } from 'next';
 import { fetchNoteByIdServer } from '@/lib/api/serverApi';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { Metadata } from 'next';
 import NoteDetails from './NoteDetails.client';
 
 interface GenerateMetadataProps {
@@ -34,12 +34,6 @@ export async function generateMetadata({ params }: GenerateMetadataProps): Promi
       ],
       type: 'article',
     },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: ['https://ac.goit.global/fullstack/react/notehub-og-meta.jpg'],
-    },
   };
 }
 
@@ -51,7 +45,7 @@ async function Note({ params }: NoteProps) {
   const { id } = await params;
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
+  queryClient.prefetchQuery({
     queryKey: ['note', id],
     queryFn: () => fetchNoteByIdServer(id),
   });

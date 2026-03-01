@@ -68,17 +68,12 @@ export interface StatusMessage {
   message: string;
 }
 
-export const logout = async (): Promise<StatusMessage> => {
-  const { data } = await nextServer.post<StatusMessage>('/auth/logout');
-  return data;
+export const logout = async (): Promise<void> => {
+  await nextServer.post('/auth/logout');
 };
 
-interface CheckSessionRequest {
-  message: string;
-}
-
-export const checkSession = async (): Promise<User | CheckSessionRequest> => {
-  const { data } = await nextServer.get<User | CheckSessionRequest>('/auth/session');
+export const checkSession = async (): Promise<User | StatusMessage> => {
+  const { data } = await nextServer.get<User | StatusMessage>('/auth/session');
   return data;
 };
 
@@ -89,6 +84,8 @@ export const getMe = async (): Promise<User> => {
 
 export interface UpdateUserRequest {
   username?: string;
+  email?: string;
+  avatar?: string;
 }
 
 export const updateMe = async (payload: UpdateUserRequest): Promise<User> => {

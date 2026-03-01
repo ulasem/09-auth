@@ -1,12 +1,12 @@
-import type { Metadata } from 'next';
-import { fetchNotesServer } from '@/lib/api/serverApi';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { fetchNotesServer } from '@/lib/api/serverApi';
 import NotesByTagClient from './Notes.client';
+import type { Metadata } from 'next';
 
 type GenerateMetadataProps = {
-  params: Promise<{
+  params: {
     slug?: string[];
-  }>;
+  };
 };
 
 export async function generateMetadata({ params }: GenerateMetadataProps): Promise<Metadata> {
@@ -45,7 +45,7 @@ interface NotesByTagProps {
 
 async function NotesByTag({ params }: NotesByTagProps) {
   const { slug } = await params;
-  const tag = slug?.[0] ?? 'all';
+  const tag = slug[0];
 
   const queryClient = new QueryClient();
 

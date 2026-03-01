@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 import css from './Footer.module.css';
 
 function Footer() {
@@ -11,7 +9,7 @@ function Footer() {
           <p>Developer: Yuliia Semochko</p>
           <p>
             Contact me:
-            <Link href="mailto:yuliiasemochko819@gmail.com">yuliiasemochko819@gmail.com</Link>
+            <a href="mailto:yuliiasemochko819@gmail.com">yuliiasemochko819@gmail.com</a>
           </p>
         </div>
       </div>

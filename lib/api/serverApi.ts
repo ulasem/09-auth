@@ -9,7 +9,7 @@ export const fetchNotesServer = async (
   search: string = '',
   tag?: string,
 ): Promise<FetchNotesResponse> => {
-  const cookiesStore = await cookies();
+  const cookieStore = await cookies();
 
   const { data } = await nextServer.get<FetchNotesResponse>('/notes', {
     params: {
@@ -19,17 +19,17 @@ export const fetchNotesServer = async (
       ...(tag && tag !== 'all' && { tag }),
     },
     headers: {
-      Cookie: cookiesStore.toString(),
+      Cookie: cookieStore.toString(),
     },
   });
   return data;
 };
 
 export const fetchNoteByIdServer = async (id: string): Promise<Note> => {
-  const cookiesStore = await cookies();
+  const cookieStore = await cookies();
   const { data } = await nextServer.get<Note>(`/notes/${id}`, {
     headers: {
-      Cookie: cookiesStore.toString(),
+      Cookie: cookieStore.toString(),
     },
   });
   return data;
